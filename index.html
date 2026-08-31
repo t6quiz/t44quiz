@@ -2,20 +2,20 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Checklist Builder</title>
 <style>
-body{margin:0;background:#0f172a;color:#e5e7eb;font-family:Arial,sans-serif}header{padding:20px;background:#0b1220;border-bottom:1px solid #334155;position:sticky;top:0;z-index:3}
+body{margin:0;background:#0f172a;color:#e5e7eb;font-family:Arial,sans-serif}header{padding:20px;background:#0b1220;border-bottom:1px solid #334155;position:sticky;top:0;z-index:100}
 h1{margin:0 0 6px;font-size:22px}.muted{color:#94a3b8;font-size:13px}.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 button{background:#1e293b;color:#e5e7eb;border:1px solid #475569;border-radius:7px;padding:9px 12px;cursor:pointer}.primary{background:#92400e}
 main{max-width:1500px;margin:auto;padding:20px}.tabs{display:flex;gap:8px;margin-bottom:14px}.active{background:#f59e0b;color:#111827;font-weight:bold}
-.notice{background:#1c1917;border-left:3px solid #f59e0b;padding:10px 12px;margin-bottom:14px;color:#fde68a}.quiz-input{transition:.15s}.quiz-input.correct{background:#064e3b;border-color:#22c55e;color:#dcfce7}.quiz-input.wrong{background:#7f1d1d;border-color:#ef4444;color:#fee2e2}.quiz-off .quiz-input{background:#0b1220;border-color:#475569}.answer-key{background:#172033;border:1px dashed #475569;padding:8px;border-radius:6px;white-space:pre-wrap}
+.notice{background:#1c1917;border-left:3px solid #f59e0b;padding:10px 12px;margin-bottom:14px;color:#fde68a}.quiz-input{transition:.15s}.quiz-input.correct{background:#064e3b;border-color:#22c55e;color:#dcfce7}.quiz-input.wrong{background:#7f1d1d;border-color:#ef4444;color:#fee2e2}.quiz-off .quiz-input{background:#0b1220;border-color:#475569}.quiz-off .challenge-input,.quiz-off .response-input{color:transparent;caret-color:#e5e7eb}.quiz-off .challenge-input:focus,.quiz-off .response-input:focus{color:#e5e7eb}.quiz-off .challenge-input::placeholder,.quiz-off .response-input::placeholder{color:#64748b}.answer-key{background:#172033;border:1px dashed #475569;padding:8px;border-radius:6px;white-space:pre-wrap}
 .meta{display:flex;gap:10px;margin-bottom:14px}.meta input{width:260px}
-table{width:100%;min-width:1050px;border-collapse:collapse}th{background:#1e293b;text-align:left;padding:10px;position:sticky;top:116px}td{border-top:1px solid #334155;padding:7px;vertical-align:top}
+table{width:100%;min-width:1050px;border-collapse:collapse}th{background:#1e293b;text-align:left;padding:10px;position:sticky;top:0;z-index:20}td{border-top:1px solid #334155;padding:7px;vertical-align:top}
 input,textarea{width:100%;box-sizing:border-box;background:#0b1220;color:#e5e7eb;border:1px solid #475569;border-radius:6px;padding:8px;font:inherit}textarea{min-height:90px;resize:vertical;line-height:1.35}
 .wrap{overflow:auto;border:1px solid #334155;border-radius:9px}.del{color:#fecaca;border-color:#7f1d1d}.foot{color:#94a3b8;font-size:12px;margin-top:9px}
 @media print{header,.tabs,.meta,.notice,.foot,.actions{display:none}body{background:white;color:black}table{min-width:0}th{position:static;background:#eee;color:black}input,textarea{border:0;background:white;color:black;padding:0}}
 </style></head>
 <body>
 <header><h1>Checklist Builder</h1><div class="muted">Editable Challenge / Action / Response interface</div>
-<div class="bar"><button class="primary" onclick="add()">+ Add Step</button><button onclick="toggleQuiz()">Quiz Mode: ON</button><button onclick="clearAnswers()">Clear Answers</button><button onclick="save()">Save</button><button onclick="load()">Load</button><button onclick="exportFile()">Export JSON</button><button onclick="print()">Print</button><button onclick="resetList()">Reset</button></div></header>
+<div class="bar"><button class="primary" onclick="add()">+ Add Step</button><button id="quizToggle" onclick="toggleQuiz()">Quiz Mode: ON</button><button onclick="clearAnswers()">Clear Answers</button><button onclick="save()">Save</button><button onclick="load()">Load</button><button onclick="exportFile()">Export JSON</button><button onclick="print()">Print</button><button onclick="resetList()">Reset</button></div></header>
 <main>
 <div class="notice">Drafted from the uploaded Hollywood/Appendix F checklist. Use as an editable training/reference interface and verify the current approved checklist before operational use.</div>
 <div class="tabs"><button id="beforeTab" class="active" onclick="tab('before')">Before Start</button><button id="startTab" onclick="tab('start')">Start</button></div>
@@ -64,8 +64,15 @@ function render(){
   b.appendChild(tr);
  });
 }
+let quizMode=true;
 function toggleQuiz(){
- document.body.classList.toggle('quiz-off');
+ quizMode=!quizMode;
+ document.body.classList.toggle('quiz-off',!quizMode);
+ const btn=document.getElementById('quizToggle');
+ if(btn) btn.textContent=quizMode?'Quiz Mode: ON':'Quiz Mode: OFF';
+ if(!quizMode){
+   document.querySelectorAll('.quiz-input').forEach(x=>x.classList.remove('correct','wrong'));
+ }
 }
 function clearAnswers(){
  document.querySelectorAll('.quiz-input').forEach(x=>{
