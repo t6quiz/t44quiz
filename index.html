@@ -37,10 +37,13 @@ function render(){
   let stepCell = quizMode
     ? '<td><div class="step-number">'+(r.step || i+1)+'</div></td>'
     : '<td><input class="step" value="'+(r.step || i+1)+'"></td>';
+  let actionCell = quizMode
+    ? '<td class="action-cell"><div class="answer-key"></div></td>'
+    : '<td class="action-cell"><textarea class="action-input" placeholder="Edit action..."></textarea></td>';
 
   tr.innerHTML=stepCell+
    '<td><input class="quiz-input challenge-input" placeholder="Type the challenge..."></td>'+
-   '<td class="action-cell"><div class="answer-key"></div></td>'+
+   actionCell+
    '<td><input class="quiz-input response-input" placeholder="Type the response..."></td>'+
    '<td class="actions"><button class="del">Delete</button></td>';
 
@@ -50,7 +53,12 @@ function render(){
   }
 
   let action=tr.querySelector('.answer-key');
-  action.textContent=r.action;
+  let actionInput=tr.querySelector('.action-input');
+  if(action){ action.textContent=r.action || ''; }
+  if(actionInput){
+    actionInput.value = r.action || '';
+    actionInput.oninput = e => r.action = e.target.value;
+  }
 
   let challenge=tr.querySelector('.challenge-input');
   let response=tr.querySelector('.response-input');
@@ -119,7 +127,7 @@ function applyMode(){
  }
  if(!quizMode){
   actionsVisible=true;
-  document.body.classList.add('actions-hidden');
+  document.body.classList.remove('actions-hidden');
   if(actionBtn) actionBtn.textContent='Actions: Visible';
  } else {
   document.body.classList.toggle('actions-hidden',!actionsVisible);
