@@ -15,7 +15,7 @@ input,textarea{width:100%;box-sizing:border-box;background:#fff;color:#111827;bo
 </style></head>
 <body>
 <header><h1>t44quiz</h1>
-<div class="bar"><button id="addStepBtn" class="primary" onclick="add()">+ Add Step</button><button id="quizModeBtn" class="mode-btn active" onclick="switchToQuiz()">Quiz Mode</button><button id="editModeBtn" class="mode-btn" onclick="switchToEdit()">Edit Mode</button><button id="actionToggle" class="quiz-only" onclick="toggleActions()">Actions: Visible</button><button id="clearAnswersBtn" class="quiz-only" onclick="clearAnswers()">Clear Answers</button><button id="saveBtn" onclick="save()" style="display:none">Save</button></div></header>
+<div class="bar"><button id="addStepBtn" class="primary" onclick="add()">+ Add Step</button><button id="quizModeBtn" class="mode-btn active" onclick="switchToQuiz()">Quiz Mode</button><button id="editModeBtn" class="mode-btn" onclick="switchToEdit()">Edit Mode</button><button id="actionToggle" class="quiz-only" onclick="toggleActions()">Actions: Visible</button><button id="answerToggle" class="quiz-only" onclick="toggleAnswers()">Answers: Visible</button><button id="clearAnswersBtn" class="quiz-only" onclick="clearAnswers()">Clear Answers</button><button id="saveBtn" onclick="save()" style="display:none">Save</button></div></header>
 <main>
 <div class="tabs"><button id="beforeTab" class="active" onclick="tab('before')">Before Start</button><button id="startTab" onclick="tab('start')">Start</button></div>
 <div class="meta"><input id="title" placeholder="Checklist title" style="display:none"></div>
@@ -105,6 +105,7 @@ function render(){
 }
 let quizMode=true;
 let actionsVisible=true;
+let answersVisible=true;
 function applyMode(){
  document.body.classList.toggle('quiz-mode',quizMode);
  const addBtn=document.getElementById('addStepBtn');
@@ -113,6 +114,7 @@ function applyMode(){
  const saveBtn=document.getElementById('saveBtn');
  const clearBtn=document.getElementById('clearAnswersBtn');
  const actionBtn=document.getElementById('actionToggle');
+ const answerBtn=document.getElementById('answerToggle');
  const titleInput=document.getElementById('title');
  if(addBtn) addBtn.style.display=quizMode?'none':'inline-block';
  if(quizBtn) quizBtn.classList.toggle('active',quizMode);
@@ -120,6 +122,7 @@ function applyMode(){
  if(saveBtn) saveBtn.style.display=quizMode?'none':'inline-block';
  if(clearBtn) clearBtn.style.display=quizMode?'inline-block':'none';
  if(actionBtn) actionBtn.style.display=quizMode?'inline-block':'none';
+ if(answerBtn) answerBtn.style.display=quizMode?'inline-block':'none';
  if(titleInput){
   titleInput.readOnly = !quizMode ? false : true;
   titleInput.style.display = quizMode ? 'none' : 'inline-block';
@@ -127,10 +130,15 @@ function applyMode(){
  }
  if(!quizMode){
   actionsVisible=true;
+  answersVisible=true;
   document.body.classList.remove('actions-hidden');
   if(actionBtn) actionBtn.textContent='Actions: Visible';
+  if(answerBtn) answerBtn.textContent='Answers: Visible';
  } else {
   document.body.classList.toggle('actions-hidden',!actionsVisible);
+  document.querySelectorAll('.quiz-input').forEach(el => {
+    el.style.display = answersVisible ? '' : 'none';
+  });
  }
 }
 function switchToQuiz(){
@@ -156,6 +164,15 @@ function toggleActions(){
  if(btn) btn.textContent=actionsVisible?'Actions: Visible':'Actions: Hidden';
  document.querySelectorAll('.action-cell').forEach(cell=>cell.style.display=actionsVisible?'':'none');
  document.querySelectorAll('.action-column').forEach(cell=>cell.style.display=actionsVisible?'':'none');
+}
+function toggleAnswers(){
+ if(quizMode===false) return;
+ answersVisible=!answersVisible;
+ document.querySelectorAll('.quiz-input').forEach(el => {
+  el.style.display = answersVisible ? '' : 'none';
+ });
+ const btn=document.getElementById('answerToggle');
+ if(btn) btn.textContent=answersVisible?'Answers: Visible':'Answers: Hidden';
 }
 function clearAnswers(){
  if(quizMode===false) return;
