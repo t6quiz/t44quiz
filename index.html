@@ -89,6 +89,12 @@ function render(){
    response.placeholder='Type the response...';
    bindQuizField(challenge, 'challengeAnswer', r.challenge);
    bindQuizField(response, 'responseAnswer', r.response);
+   if(answersVisible){
+    challenge.value = r.challenge || '';
+    response.value = r.response || '';
+    grade(challenge, r.challenge);
+    grade(response, r.response);
+   }
   } else {
    challenge.value=r.challenge || '';
    response.value=r.response || '';
@@ -105,7 +111,7 @@ function render(){
 }
 let quizMode=true;
 let actionsVisible=true;
-let answersVisible=true;
+let answersVisible=false;
 function applyMode(){
  document.body.classList.toggle('quiz-mode',quizMode);
  const addBtn=document.getElementById('addStepBtn');
@@ -130,15 +136,13 @@ function applyMode(){
  }
  if(!quizMode){
   actionsVisible=true;
-  answersVisible=true;
+  answersVisible=false;
   document.body.classList.remove('actions-hidden');
   if(actionBtn) actionBtn.textContent='Actions: Visible';
-  if(answerBtn) answerBtn.textContent='Answers: Visible';
+  if(answerBtn) answerBtn.textContent='Answers: Hidden';
  } else {
   document.body.classList.toggle('actions-hidden',!actionsVisible);
-  document.querySelectorAll('.quiz-input').forEach(el => {
-    el.style.display = answersVisible ? '' : 'none';
-  });
+  if(answerBtn) answerBtn.textContent=answersVisible?'Answers: Visible':'Answers: Hidden';
  }
 }
 function switchToQuiz(){
@@ -168,8 +172,28 @@ function toggleActions(){
 function toggleAnswers(){
  if(quizMode===false) return;
  answersVisible=!answersVisible;
- document.querySelectorAll('.quiz-input').forEach(el => {
-  el.style.display = answersVisible ? '' : 'none';
+ const rows = document.querySelectorAll('#rows tr');
+ rows.forEach((tr, index) => {
+  const r = DATA[current][index];
+  if(!r) return;
+  const challenge = tr.querySelector('.challenge-input');
+  const response = tr.querySelector('.response-input');
+  if(!challenge || !response) return;
+  if(answersVisible){
+   challenge.value = r.challenge || '';
+   response.value = r.response || '';
+   challenge.classList.remove('correct','wrong');
+   response.classList.remove('correct','wrong');
+   challenge.classList.add(matches(challenge.value, r.challenge) ? 'correct' : 'wrong');
+   response.classList.add(matches(response.value, r.response) ? 'correct' : 'wrong');
+  } else {
+   challenge.value = r.challengeAnswer || '';
+   response.value = r.responseAnswer || '';
+   challenge.classList.remove('correct','wrong');
+   response.classList.remove('correct','wrong');
+   if(challenge.value.trim() !== '') challenge.classList.add(matches(challenge.value, r.challenge) ? 'correct' : 'wrong');
+   if(response.value.trim() !== '') response.classList.add(matches(response.value, r.response) ? 'correct' : 'wrong');
+  }
  });
  const btn=document.getElementById('answerToggle');
  if(btn) btn.textContent=answersVisible?'Answers: Visible':'Answers: Hidden';
