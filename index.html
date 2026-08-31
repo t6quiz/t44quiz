@@ -56,18 +56,23 @@ function render(){
   let challenge=tr.querySelector('.challenge-input');
   let response=tr.querySelector('.response-input');
 
-  if(quizMode){
-   challenge.value='';
-   response.value='';
-   challenge.placeholder='Type the challenge...';
-   response.placeholder='Type the response...';
-   function grade(input, expected){
+  function grade(input, expected){
     input.classList.remove('correct','wrong');
     if(input.value.trim()==='') return;
     input.classList.add(matches(input.value,expected)?'correct':'wrong');
-   }
-   challenge.oninput=e=>grade(challenge,r.challenge);
-   response.oninput=e=>grade(response,r.response);
+  }
+
+  if(quizMode){
+   r.challengeAnswer = r.challengeAnswer || '';
+   r.responseAnswer = r.responseAnswer || '';
+   challenge.value=r.challengeAnswer;
+   response.value=r.responseAnswer;
+   challenge.placeholder='Type the challenge...';
+   response.placeholder='Type the response...';
+   challenge.oninput=e=>{ r.challengeAnswer=e.target.value; grade(challenge,r.challenge); };
+   response.oninput=e=>{ r.responseAnswer=e.target.value; grade(response,r.response); };
+   grade(challenge,r.challenge);
+   grade(response,r.response);
   } else {
    challenge.value=r.challenge || '';
    response.value=r.response || '';
