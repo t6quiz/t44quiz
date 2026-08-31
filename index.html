@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Checklist Builder</title>
+<style>
+body{margin:0;background:#0f172a;color:#e5e7eb;font-family:Arial,sans-serif}header{padding:20px;background:#0b1220;border-bottom:1px solid #334155;position:sticky;top:0;z-index:3}
+h1{margin:0 0 6px;font-size:22px}.muted{color:#94a3b8;font-size:13px}.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+button{background:#1e293b;color:#e5e7eb;border:1px solid #475569;border-radius:7px;padding:9px 12px;cursor:pointer}.primary{background:#92400e}
+main{max-width:1500px;margin:auto;padding:20px}.tabs{display:flex;gap:8px;margin-bottom:14px}.active{background:#f59e0b;color:#111827;font-weight:bold}
+.notice{background:#1c1917;border-left:3px solid #f59e0b;padding:10px 12px;margin-bottom:14px;color:#fde68a}.quiz-input{transition:.15s}.quiz-input.correct{background:#064e3b;border-color:#22c55e;color:#dcfce7}.quiz-input.wrong{background:#7f1d1d;border-color:#ef4444;color:#fee2e2}.quiz-off .quiz-input{background:#0b1220;border-color:#475569}.answer-key{background:#172033;border:1px dashed #475569;padding:8px;border-radius:6px;white-space:pre-wrap}
+.meta{display:flex;gap:10px;margin-bottom:14px}.meta input{width:260px}
+table{width:100%;min-width:1050px;border-collapse:collapse}th{background:#1e293b;text-align:left;padding:10px;position:sticky;top:116px}td{border-top:1px solid #334155;padding:7px;vertical-align:top}
+input,textarea{width:100%;box-sizing:border-box;background:#0b1220;color:#e5e7eb;border:1px solid #475569;border-radius:6px;padding:8px;font:inherit}textarea{min-height:90px;resize:vertical;line-height:1.35}
+.wrap{overflow:auto;border:1px solid #334155;border-radius:9px}.del{color:#fecaca;border-color:#7f1d1d}.foot{color:#94a3b8;font-size:12px;margin-top:9px}
+@media print{header,.tabs,.meta,.notice,.foot,.actions{display:none}body{background:white;color:black}table{min-width:0}th{position:static;background:#eee;color:black}input,textarea{border:0;background:white;color:black;padding:0}}
+</style></head>
+<body>
+<header><h1>Checklist Builder</h1><div class="muted">Editable Challenge / Action / Response interface</div>
+<div class="bar"><button class="primary" onclick="add()">+ Add Step</button><button onclick="toggleQuiz()">Quiz Mode: ON</button><button onclick="clearAnswers()">Clear Answers</button><button onclick="save()">Save</button><button onclick="load()">Load</button><button onclick="exportFile()">Export JSON</button><button onclick="print()">Print</button><button onclick="resetList()">Reset</button></div></header>
+<main>
+<div class="notice">Drafted from the uploaded Hollywood/Appendix F checklist. Use as an editable training/reference interface and verify the current approved checklist before operational use.</div>
+<div class="tabs"><button id="beforeTab" class="active" onclick="tab('before')">Before Start</button><button id="startTab" onclick="tab('start')">Start</button></div>
+<div class="meta"><input id="title" placeholder="Checklist title"><input placeholder="Aircraft / notes"></div>
+<div class="wrap"><table><thead><tr><th style="width:70px">Step #</th><th style="width:20%">Challenge — Quiz</th><th style="width:48%">Action — Visible</th><th style="width:25%">Response — Quiz</th><th class="actions"></th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="foot">Challenge and Response are quiz fields. Action remains visible. Green = exact match after ignoring capitalization and extra whitespace; red = does not match. Save/Load uses this browser's local storage.</div>
+</main>
+<script>
+const DATA={"before": [{"step": "1", "challenge": "Parking Brake", "action": "Pull handle, pump LS brakes to set.", "response": "PF: Set"}, {"step": "2", "challenge": "Electrical Panel", "action": "Confirm the following are OFF (or set for the type of start):\nA. Battery\nB. Generators\nC. Avionics Master\nD. AUX BAT\nE. Start and auto-ignition", "response": "PF: Set"}, {"step": "3", "challenge": "Landing Gear", "action": "Visually check handle down and locked. Do not touch the gear handle while on the ground.", "response": "PF: Down"}, {"step": "4", "challenge": "Flaps", "action": "Check that the flap handle matches what you can see out the window on your side. The indicator is inop without power.\nUp: paint on wing continuous.\nApp: split with some internal red paint.\nDown: flap upper surface not visible; more red interior paint visible.", "response": "PF: Correspond\nPM: Correspond"}, {"step": "5", "challenge": "Power Quadrant", "action": "Right to Left:\nCondition Lever — FUEL CUTOFF (full aft); set friction.\nProp Lever — from Feather to Full Forward; set friction.\nPower Lever — aft against Idle stops (Beta or Reverse will damage the reverse mechanism); set friction.", "response": "PF: Set"}, {"step": "6", "challenge": "Lights", "action": "Make sure all lights are OFF (down), except Beacon — ON.\n30 min before sunset / <3 SM visibility / formation flight: + Navigation Lights — ON.", "response": "PF: Set"}, {"step": "7", "challenge": "Anti-Ice/Deice", "action": "Ensure all switches in the HEAT subpanel and the two deice/anti-ice switches above it are OFF (down).\nEnsure BOTH ice vanes below the LS yoke (Ice Engine Protection) are pushed IN to close.", "response": "PF: OFF"}, {"step": "8", "challenge": "Fuel Panel", "action": "A. Fuel Panel circuit breakers — IN\nB. Firewall Valve — OPEN (guard down)\nC. Crossfeed: OPEN; check crossfeed annunciator; CLOSED\nD. Boost Pump: Left ON and note battery ammeter draw; Right ON and confirm ammeter draw increased; leave both ON\nE. Battery — ON; check LH/RH Fuel Px annunciator lights extinguished.", "response": "PF: Checked Set"}, {"step": "9", "challenge": "Annunciator Panel", "action": "RS holds Press-To-Test button. LS ensures all annunciator lights, terrain, pull up, terrain NA, ESIS on/off, and EMER FREQ illuminate. Punch out Fault Warn. If dimmer was not adjusted in preflight, do it now. RS releases PtT button.\nNote: good time for observer to close and latch cabin door.", "response": "PF: Checked"}, {"step": "10", "challenge": "Fire Detectors", "action": "Rotate Fire Detector Switch clockwise to 3; wait 3 seconds; LS confirms Fault Warn, LH Fire, LH FIRE EXT PUSH TO EXT; RS confirms RH Fire, RH FIRE EXT PUSH TO EXT.\nRepeat at 2 and 1. Rotate switch to OFF.", "response": "PF: 3\nPM: 2\nPF: 3\nPM: 2\nPF: 3\nPM: 2\nPF: Checked\nPM: Checked"}, {"step": "11", "challenge": "Cabin Door", "action": "Observer: confirm using patch indicators on the door that it is closed and latched.\nLS: confirm CABIN DOOR OPEN annunciator is extinguished.", "response": "OBS: Locked\nPF: Locked\nPM: Before Start Checklist complete"}], "start": [{"step": "1", "challenge": "PF Brief / Start Selection", "action": "Example: “This will be a battery start of the right engine.” Hold up two fingers for lineman to indicate right-side engine start.", "response": "PF: Left side clear\nPM: Right side clear"}, {"step": "2", "challenge": "Right Starter", "action": "Engage right starter with right hand by moving it from middle OFF to IGN & ENG START. Leave right hand on starter in case of abnormal start. Simultaneously begin yoke clock timer with left hand. Call out switch movement (“on”), RH IGN IND illumination (“ignition”), and N1 increase (“rotation”). Know duty cycle/limitations and be prepared to abort abnormal starts.", "response": "PF: On, Ignition, Rotation"}, {"step": "3", "challenge": "N1", "action": "Confirm readout at 12% and rising.", "response": "Above 12%"}, {"step": "4", "challenge": "Right Condition Lever", "action": "Check battery above 18V. If below 18V, discontinue start and consider charging battery before subsequent starts. RS begins yoke clock for light-off time limit of 10 seconds. Move right condition lever to Low Idle and keep hand on lever to abort start.", "response": "Low Idle"}, {"step": "5", "challenge": "Fuel Flow / Light Off", "action": "Note fuel flow approximately 100 lb/hr. When ITT rises, call; RS stops clock and verbally notes elapsed time. If no light-off after 10 seconds, execute abnormal start EP. Faulty fuel flow gauge is not a reason to abort.", "response": "Light Off\nPM: ____ seconds"}, {"step": "6", "challenge": "Start Monitoring", "action": "PF monitors start: N1, ITT, lineman, clock/elapsed seconds. Roughly 3–4 x 10-second cycles for start. ITT limit 925°C / 1090°C for 2 seconds. Start complete when N1 reaches Low Idle 51–54%.", "response": "N1 stable above 50%"}, {"step": "7", "challenge": "Right Starter / Oil Pressure", "action": "Move right starter to OFF; stop LS clock and check time OFF. Confirm successful start: oil pressure >40 PSI, N1 stable 51–54%, ITT below 685°C.", "response": "Thumbs up to lineman"}, {"step": "8", "challenge": "Right Condition Lever / Generator", "action": "Advance condition lever to High Idle; ensure N1 70–73%. Move right generator switch forward to RESET detent, then it springs to ON. Check RH GEN OUT light extinguished and ammeter load increase.", "response": "High Idle\n“Reset, On” / Switch, Light, Load"}, {"step": "9", "challenge": "Control Check", "action": "PF rolls yoke left; PM checks opposite right-wing aileron indication. PF rolls right; PM checks opposite indication. PF pulls yoke aft; PM confirms elevator movement. PF pushes yoke forward; PM confirms elevator movement. PF checks rudder deflection while lineman observes. PF indicates flaps down, sets Flaps Down, passes controls for RS control check; PM passes controls back.", "response": "PF: Left aileron up → PM: Down\nPF: Aileron down → PM: Up\nPF: Elevator Up → PM: Up\nPF: Elevator down → PM: Down"}, {"step": "10", "challenge": "Flap Check", "action": "Indicate flaps down to lineman; select Full Down; confirm 100%/43° and visually check. Select APP; confirm 35%/15° and visually check. Select UP; confirm indicator reads up and visually check. Return to selected flap configuration as directed.", "response": "PF: Down / checked down\nPM: Down\nPF: Approach / checked approach\nPM: Approach\nPF: Up / checked up\nPM: Up"}, {"step": "11", "challenge": "Right Generator", "action": "Check load below 0.5 (wait if necessary). Set generator to OFF.", "response": "Load below .5\nOff"}, {"step": "12", "challenge": "PF Briefs Second Start", "action": "Example: “This will be a generator-assisted start of the left engine.” Hold up one finger for lineman to indicate left-side engine start.", "response": "PF: Left side clear\nPM: Right side clear"}, {"step": "13", "challenge": "Left Starter", "action": "Engage LEFT starter with right hand from middle OFF to IGN & ENG START. Leave hand on starter in case of abnormal start. Begin yoke clock with left hand. Call “on,” ignition annunciator illumination, and N1 “rotation.” Know duty cycle/limitations and be prepared to abort abnormal starts.", "response": "On, Ignition, Rotation"}, {"step": "14", "challenge": "N1 / Right Generator", "action": "Confirm N1 readout at 12% and rising. Turn RIGHT generator ON and note RH GEN OUT extinguished. If ITT likely to exceed 790°C, abort start (turn off RIGHT generator, then complete Abort Start procedure for LEFT engine).", "response": "Above 12%\nReset, On\nMonitor ITT"}, {"step": "15", "challenge": "Left Condition Lever / Fuel Flow", "action": "Move left condition lever to Low Idle and keep hand on lever to abort. RS begins yoke clock for 10-second light-off limit. Note fuel flow approximately 100 lb/hr. When ITT rises, call; RS stops clock and notes elapsed time. If no light-off after 10 seconds, execute abnormal start EP.", "response": "Low Idle\nLight Off\nPM: ____ seconds"}, {"step": "16", "challenge": "Left Start Monitoring", "action": "PF monitors N1, ITT, lineman, clock/elapsed seconds. Roughly 3–4 x 10-second cycles. ITT limit 925°C / 1090°C for 2 seconds. Start complete at Low Idle 51–54%.", "response": "N1 stable above 50%"}, {"step": "17", "challenge": "Left Starter / Oil Pressure", "action": "Move right starter to OFF; stop LS clock and check time OFF. Confirm oil pressure >40 PSI, N1 stable 51–54%, ITT below 685°C.", "response": "Thumbs up to lineman"}, {"step": "18", "challenge": "Right Generator", "action": "OFF.", "response": "Off"}, {"step": "19", "challenge": "Fuel Quantity Indicators", "action": "Check that indicators are both reading something. Otherwise indicates failure of R/L Current Limiter.", "response": "Checked"}, {"step": "20", "challenge": "Right Generator", "action": "Move switch forward to RESET detent, then springs to ON. Check RH GEN OUT light extinguished and ammeter load increase.", "response": "Reset, On\nSwitch, Light, Load"}, {"step": "21", "challenge": "Left Generator", "action": "Move switch forward to RESET detent, then springs to ON. Check LH GEN OUT light extinguished and ammeter load increase. Confirm load within 0.1 L/R.", "response": "Reset, On\nSwitch, Light, Load\nLoad < .1"}, {"step": "22", "challenge": "Right Condition Lever", "action": "Move to Low Idle. Once N1 at 51–54%.", "response": "Low Idle"}, {"step": "23", "challenge": "Fuel Control Heat", "action": "Turn on both FUEL CONTROL switches on the HEAT subpanel.", "response": "On"}]};let current='before';const ORIGINAL=JSON.parse(JSON.stringify(DATA));
+function tab(t){current=t;document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById(t+'Tab').classList.add('active');document.getElementById('title').value=t==='before'?'BEFORE START':'START';render()}
+function normalizeAnswer(v){
+ return String(v).toLowerCase().replace(/\s+/g,' ').trim();
+}
+function matches(user,answer){
+ return normalizeAnswer(user)===normalizeAnswer(answer);
+}
+function render(){
+ let b=document.getElementById('rows');b.innerHTML='';
+ DATA[current].forEach((r,i)=>{
+  let tr=document.createElement('tr');
+  tr.innerHTML='<td><input class="step"></td>'+
+   '<td><input class="quiz-input challenge-input" placeholder="Type the challenge..."></td>'+
+   '<td><div class="answer-key"></div></td>'+
+   '<td><input class="quiz-input response-input" placeholder="Type the response..."></td>'+
+   '<td class="actions"><button class="del">Delete</button></td>';
+
+  let f=tr.querySelectorAll('input');
+  f[0].value=r.step;
+  f[0].oninput=e=>r.step=e.target.value;
+
+  let action=tr.querySelector('.answer-key');
+  action.textContent=r.action;
+
+  let challenge=tr.querySelector('.challenge-input');
+  let response=tr.querySelector('.response-input');
+
+  function grade(input, expected){
+    input.classList.remove('correct','wrong');
+    if(input.value.trim()==='') return;
+    input.classList.add(matches(input.value,expected)?'correct':'wrong');
+  }
+  challenge.oninput=e=>grade(challenge,r.challenge);
+  response.oninput=e=>grade(response,r.response);
+
+  tr.querySelector('.del').onclick=()=>{DATA[current].splice(i,1);render()};
+  b.appendChild(tr);
+ });
+}
+function toggleQuiz(){
+ document.body.classList.toggle('quiz-off');
+}
+function clearAnswers(){
+ document.querySelectorAll('.quiz-input').forEach(x=>{
+  x.value='';
+  x.classList.remove('correct','wrong');
+ });
+}
+function add(){DATA[current].push({step:String(DATA[current].length+1),challenge:'',action:'',response:''});render()}
+function save(){localStorage.setItem('cb-'+current,JSON.stringify(DATA[current]));alert('Saved '+current+' checklist.')}
+function load(){let x=localStorage.getItem('cb-'+current);if(!x)return alert('No saved checklist found.');DATA[current]=JSON.parse(x);render()}
+function resetList(){if(confirm('Reset this checklist to the original draft?')){DATA[current]=JSON.parse(JSON.stringify(ORIGINAL[current]));render()}}
+function exportFile(){let b=new Blob([JSON.stringify({checklist:current,rows:DATA[current]},null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=current+'-checklist.json';a.click()}
+tab('before');
+</script></body></html>
