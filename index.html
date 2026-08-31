@@ -6,10 +6,10 @@ body{margin:0;background:#fff;color:#111827;font-family:Arial,sans-serif}header{
 h1{margin:0 0 6px;font-size:22px}.muted{color:#475569;font-size:13px}.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 button{background:#fff;color:#111827;border:1px solid #cbd5e1;border-radius:7px;padding:9px 12px;cursor:pointer}.primary{background:#22d3ee;color:#082f49;border-color:#06b6d4}.mode-btn.active{background:#22d3ee;color:#082f49;border-color:#06b6d4;font-weight:bold}button:disabled{opacity:.45;cursor:not-allowed}
 main{max-width:1500px;margin:auto;padding:20px}.tabs{display:flex;gap:8px;margin-bottom:14px}.active{background:#22d3ee;color:#082f49;font-weight:bold}
-.notice{background:#ecfeff;border-left:3px solid #22d3ee;padding:10px 12px;margin-bottom:14px;color:#0f172a}.quiz-input{transition:.15s}.quiz-input.correct{background:#dcfce7;border-color:#22c55e;color:#14532d}.quiz-input.wrong{background:#fee2e2;border-color:#ef4444;color:#7f1d1d}.quiz-mode .quiz-input{background:#fff;border-color:#cbd5e1}.quiz-mode .challenge-input,.quiz-mode .response-input{color:transparent;caret-color:#111827}.quiz-mode .challenge-input:focus,.quiz-mode .response-input:focus{color:#111827}.quiz-mode .challenge-input::placeholder,.quiz-mode .response-input::placeholder{color:#64748b}.actions-hidden .action-cell,.actions-hidden .action-column{display:none!important}.answer-key{background:#f8fafc;border:1px dashed #cbd5e1;padding:8px;border-radius:6px;white-space:pre-wrap}.step-number{font-weight:bold;color:#334155;padding:8px 0}
+.notice{background:#ecfeff;border-left:3px solid #22d3ee;padding:10px 12px;margin-bottom:14px;color:#0f172a}.quiz-input{transition:.15s}.quiz-input.correct{background:#dcfce7;border-color:#22c55e;color:#14532d}.quiz-input.wrong{background:#fee2e2;border-color:#ef4444;color:#7f1d1d}.quiz-mode .quiz-input{background:#fff;border-color:#cbd5e1}.quiz-mode .quiz-input.correct{background:#dcfce7;border-color:#22c55e;color:#14532d}.quiz-mode .quiz-input.wrong{background:#fee2e2;border-color:#ef4444;color:#7f1d1d}.quiz-mode .challenge-input,.quiz-mode .response-input{color:#111827;caret-color:#111827}.quiz-mode .challenge-input:focus,.quiz-mode .response-input:focus{color:#111827}.quiz-mode .challenge-input::placeholder,.quiz-mode .response-input::placeholder{color:#64748b}.actions-hidden .action-cell,.actions-hidden .action-column{display:none!important}.answer-key{background:#f8fafc;border:1px dashed #cbd5e1;padding:8px;border-radius:6px;white-space:pre-wrap}.step-number{font-weight:bold;color:#334155;padding:8px 0}
 .meta{display:flex;gap:10px;margin-bottom:14px}.meta input{width:260px}
 table{width:100%;min-width:1050px;border-collapse:collapse}th{background:#f8fafc;text-align:left;padding:10px;position:sticky;top:0;z-index:20;color:#111827;border-bottom:1px solid #dfe7f1}td{border-top:1px solid #e2e8f0;padding:7px;vertical-align:top}
-input,textarea{width:100%;box-sizing:border-box;background:#fff;color:#111827;border:1px solid #cbd5e1;border-radius:6px;padding:8px;font:inherit}textarea{min-height:90px;resize:vertical;line-height:1.35}
+input,textarea{width:100%;box-sizing:border-box;background:#fff;color:#111827;border:1px solid #cbd5e1;border-radius:6px;padding:8px;font:inherit;outline:none}input:focus,textarea:focus{border-width:2px;border-color:#cbd5e1}textarea{min-height:90px;resize:vertical;line-height:1.35}
 .wrap{overflow:auto;border:1px solid #dfe7f1;border-radius:9px;background:#fff}.del{color:#991b1b;border-color:#fca5a5}.foot{color:#475569;font-size:12px;margin-top:9px}
 @media print{header,.tabs,.meta,.notice,.foot,.actions{display:none}body{background:white;color:black}table{min-width:0}th{position:static;background:#eee;color:black}input,textarea{border:0;background:white;color:black;padding:0}}
 </style></head>
@@ -58,20 +58,29 @@ function render(){
   function grade(input, expected){
     input.classList.remove('correct','wrong');
     if(input.value.trim()==='') return;
-    input.classList.add(matches(input.value,expected)?'correct':'wrong');
+    const isMatch = matches(input.value, expected);
+    input.classList.add(isMatch ? 'correct' : 'wrong');
+  }
+
+  function bindQuizField(field, storageKey, expected){
+    const raw = r[storageKey] || '';
+    field.value = raw;
+    const update = () => {
+      r[storageKey] = field.value;
+      grade(field, expected);
+    };
+    field.oninput = update;
+    field.onblur = update;
+    update();
   }
 
   if(quizMode){
    r.challengeAnswer = r.challengeAnswer || '';
    r.responseAnswer = r.responseAnswer || '';
-   challenge.value=r.challengeAnswer;
-   response.value=r.responseAnswer;
    challenge.placeholder='Type the challenge...';
    response.placeholder='Type the response...';
-   challenge.oninput=e=>{ r.challengeAnswer=e.target.value; grade(challenge,r.challenge); };
-   response.oninput=e=>{ r.responseAnswer=e.target.value; grade(response,r.response); };
-   grade(challenge,r.challenge);
-   grade(response,r.response);
+   bindQuizField(challenge, 'challengeAnswer', r.challenge);
+   bindQuizField(response, 'responseAnswer', r.response);
   } else {
    challenge.value=r.challenge || '';
    response.value=r.response || '';
@@ -142,6 +151,10 @@ function toggleActions(){
 }
 function clearAnswers(){
  if(quizMode===false) return;
+ DATA[current].forEach(r=>{
+  r.challengeAnswer='';
+  r.responseAnswer='';
+ });
  document.querySelectorAll('.quiz-input').forEach(x=>{
   x.value='';
   x.classList.remove('correct','wrong');
