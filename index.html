@@ -159,13 +159,13 @@
 var DATA = {
   left: [
     { title: "Abnormal Start", steps: [
-      { m: "*1.", t: "Condition Lever- FUEL CUTOFF (Dec. Below 790°C)" },
-      { m: "*2.", t: "Starter- Starter Only (For The Remainder Of The 40 Seconds)" },
-      { m: "*3.", t: "Starter- Off (at 40 seconds)" }
+      { m: "*1.", t: "Condition Lever - FUEL CUTOFF (Dec. Below 790°C)" },
+      { m: "*2.", t: "Starter - Starter Only (For The Remainder Of The 40 Seconds)" },
+      { m: "*3.", t: "Starter - Off (at 40 seconds)" }
     ]},
     { title: "Emergency Shutdown on Deck", steps: [
       { m: "*1.", t: "Stop the aircraft and set the parking brake." },
-      { m: "*2.", t: "Condition Levers- FUEL CUTOFF" },
+      { m: "*2.", t: "Condition Levers - FUEL CUTOFF" },
       { note: "IN CASE OF CONFIRMED/SUSPECTED FIRE OR FUEL LEAK, CONTINUE CHECKLIST. IF NOT, SECURE REMAINING ENGINE USING SECURE CHECKLIST." },
       { m: "*3.", t: "Firewall Valves - CLOSED" },
       { m: "*4.", t: "Boost Pumps - OFF" },
@@ -178,7 +178,7 @@ var DATA = {
       { m: "*1.", t: "Announce \"Abort\"" },
       { m: "*2.", t: "Power Levers - IDLE" },
       { m: "*3.", t: "Reverse - As Required" },
-      { m: "*4.", t: "Brakes - As- Required" },
+      { m: "*4.", t: "Brakes - As Required" },
       { note: "IMMEDIATELY PRIOR TO DEPARTING THE PREPARED SURFACE:" },
       { m: "*5.", t: "Condition Levers - FUEL CUTOFF" },
       { note: "AS SOON AS PRACTICABLE:" },
@@ -273,7 +273,7 @@ var DATA = {
       { m: "*2.", t: "Flaps - APPROACH (Unless Already UP)" },
       { m: "*3.", t: "Landing Gear - UP" },
       { m: "*4.", t: "Flaps - UP" },
-      { m: "*5.", t: "Prop- 1900 RPM" }
+      { m: "*5.", t: "Prop - 1900 RPM" }
     ]},
     { title: "Low Altitude Windshear", steps: [
       { m: "*1.", t: "Power - Max Continuous" },
@@ -287,7 +287,13 @@ var DATA = {
 var allInputs = [];
 
 function normalize(s){
-  return s.trim().toLowerCase().replace(/\s+/g, " ").replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"');
+  return s.trim().toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201c\u201d]/g, '"')
+    .replace(/°/g, "")
+    .replace(/[^a-z0-9]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function buildColumn(sections, container){
