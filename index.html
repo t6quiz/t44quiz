@@ -1,218 +1,393 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>t44quiz</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T-44C Emergency Procedures Trainer</title>
 <style>
-body{margin:0;background:#fff;color:#111827;font-family:Arial,sans-serif}header{padding:20px;background:#f8fafc;border-bottom:1px solid #dfe7f1;position:sticky;top:0;z-index:100}
-h1{margin:0 0 6px;font-size:22px}.muted{color:#475569;font-size:13px}.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-button{background:#fff;color:#111827;border:1px solid #cbd5e1;border-radius:7px;padding:9px 12px;cursor:pointer}.primary{background:#22d3ee;color:#082f49;border-color:#06b6d4}.mode-btn.active{background:#22d3ee;color:#082f49;border-color:#06b6d4;font-weight:bold}button:disabled{opacity:.45;cursor:not-allowed}
-main{max-width:1500px;margin:auto;padding:20px}.tabs{display:flex;gap:8px;margin-bottom:14px}.active{background:#22d3ee;color:#082f49;font-weight:bold}
-.notice{background:#ecfeff;border-left:3px solid #22d3ee;padding:10px 12px;margin-bottom:14px;color:#0f172a}.quiz-input{transition:.15s}.quiz-input.correct{background:#dcfce7;border-color:#22c55e;color:#14532d}.quiz-input.wrong{background:#fee2e2;border-color:#ef4444;color:#7f1d1d}.quiz-mode .quiz-input{background:#fff;border-color:#cbd5e1}.quiz-mode .quiz-input.correct{background:#dcfce7;border-color:#22c55e;color:#14532d}.quiz-mode .quiz-input.wrong{background:#fee2e2;border-color:#ef4444;color:#7f1d1d}.quiz-mode .challenge-input,.quiz-mode .response-input{color:#111827;caret-color:#111827}.quiz-mode .challenge-input:focus,.quiz-mode .response-input:focus{color:#111827}.quiz-mode .challenge-input::placeholder,.quiz-mode .response-input::placeholder{color:#64748b}.actions-hidden .action-cell,.actions-hidden .action-column{display:none!important}.answer-key{background:#f8fafc;border:1px dashed #cbd5e1;padding:8px;border-radius:6px;white-space:pre-wrap}.step-number{font-weight:bold;color:#334155;padding:8px 0}
-.meta{display:flex;gap:10px;margin-bottom:14px}.meta input{width:260px}
-table{width:100%;min-width:1050px;border-collapse:collapse}th{background:#f8fafc;text-align:left;padding:10px;position:sticky;top:0;z-index:20;color:#111827;border-bottom:1px solid #dfe7f1}td{border-top:1px solid #e2e8f0;padding:7px;vertical-align:top}
-input,textarea{width:100%;box-sizing:border-box;background:#fff;color:#111827;border:1px solid #cbd5e1;border-radius:6px;padding:8px;font:inherit;outline:none}input:focus,textarea:focus{border-width:2px;border-color:#cbd5e1}textarea{min-height:90px;resize:vertical;line-height:1.35}
-.wrap{overflow:auto;border:1px solid #dfe7f1;border-radius:9px;background:#fff}.del{color:#991b1b;border-color:#fca5a5}.foot{color:#475569;font-size:12px;margin-top:9px}
-@media print{header,.tabs,.meta,.notice,.foot,.actions{display:none}body{background:white;color:black}table{min-width:0}th{position:static;background:#eee;color:black}input,textarea{border:0;background:white;color:black;padding:0}}
-</style></head>
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:#ffffff;
+    color:#000000;
+    font-family:'Times New Roman', Times, serif;
+    padding:14px;
+    font-size:13px;
+  }
+  .sheet{
+    max-width:1180px;
+    margin:0 auto;
+    border:1.5px solid #000;
+  }
+  .titlebar{
+    border-bottom:1.5px solid #000;
+    text-align:center;
+    padding:6px 10px;
+    font-weight:bold;
+    font-size:15px;
+  }
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    padding:6px 10px;
+    border-bottom:1.5px solid #000;
+  }
+  button{
+    font-family:'Times New Roman', Times, serif;
+    font-size:12px;
+    font-weight:bold;
+    border:1px solid #000;
+    background:#fff;
+    color:#000;
+    padding:5px 12px;
+    cursor:pointer;
+  }
+  button:hover{ background:#eee; }
+  button:active{ background:#ddd; }
+  .columns{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+  .rightCol{ border-left:1.5px solid #000; }
+  @media (max-width:780px){
+    .columns{ grid-template-columns:1fr; }
+    .rightCol{ border-left:none; border-top:1.5px solid #000; }
+  }
+  .section h2{
+    margin:0;
+    font-size:13px;
+    font-weight:bold;
+    text-decoration:underline;
+    padding:2px 6px 1px;
+    border-bottom:1px solid #000;
+  }
+  .note{
+    font-size:12.5px;
+    font-weight:bold;
+    padding:1px 6px;
+  }
+  .step{
+    display:flex;
+    align-items:baseline;
+    gap:4px;
+    padding:1px 6px 1px 14px;
+    white-space:nowrap;
+  }
+  .marker{
+    flex:0 0 auto;
+    font-weight:bold;
+    font-size:13px;
+  }
+  .field{
+    flex:1;
+    min-width:0;
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+  }
+  .label{
+    flex:0 0 auto;
+    font-weight:bold;
+    white-space:nowrap;
+  }
+  input{
+    flex:1;
+    min-width:60px;
+    font-family:'Times New Roman', Times, serif;
+    font-weight:bold;
+    font-size:13px;
+    padding:0 2px;
+    border:none;
+    border-bottom:1px solid #000;
+    background:transparent;
+    color:#000;
+  }
+  input:focus{ outline:none; background:#f2f2f2; }
+  input.correct{ background:#cfe8c9; color:#0b3d0b; border-bottom:1px solid #0b3d0b; }
+  input.incorrect{ background:#f2c9c4; color:#5c1310; border-bottom:1px solid #5c1310; }
+  .mark{
+    flex:0 0 auto;
+    width:14px;
+    text-align:center;
+    font-weight:bold;
+    font-size:13px;
+  }
+  .mark.ok{ color:#0b3d0b; }
+  .mark.no{ color:#5c1310; }
+  .answer{
+    font-size:11px;
+    font-style:italic;
+    color:#444;
+    display:none;
+    padding-left:14px;
+  }
+  .answer.show{ display:block; }
+  .legend{
+    padding:5px 10px;
+    font-size:11px;
+    border-bottom:1.5px solid #000;
+  }
+  footer{
+    max-width:1180px;
+    margin:10px auto 0;
+    text-align:center;
+    font-size:11px;
+    color:#555;
+  }
+</style>
+</head>
 <body>
-<header><h1>t44quiz</h1>
-<div class="bar"><button id="addStepBtn" class="primary" onclick="add()">+ Add Step</button><button id="quizModeBtn" class="mode-btn active" onclick="switchToQuiz()">Quiz Mode</button><button id="editModeBtn" class="mode-btn" onclick="switchToEdit()">Edit Mode</button><button id="actionToggle" class="quiz-only" onclick="toggleActions()">Actions: Visible</button><button id="answerToggle" class="quiz-only" onclick="toggleAnswers()">Answers: Visible</button><button id="clearAnswersBtn" class="quiz-only" onclick="clearAnswers()">Clear Answers</button><button id="saveBtn" onclick="save()" style="display:none">Save</button></div></header>
-<main>
-<div class="tabs"><button id="beforeTab" class="active" onclick="tab('before')">Before Start</button><button id="startTab" onclick="tab('start')">Start</button></div>
-<div class="meta"><input id="title" placeholder="Checklist title" style="display:none"></div>
-<div class="wrap"><table><thead><tr><th style="width:70px">Step #</th><th style="width:20%">Challenge — Quiz</th><th class="action-column" style="width:48%">Action — Visible</th><th style="width:25%">Response — Quiz</th><th class="actions"></th></tr></thead><tbody id="rows"></tbody></table></div>
-</main>
+
+<div class="sheet">
+  <div class="titlebar">T-44C EMERGENCY PROCEDURE CRITICAL ACTION MEMORY ITEMS &amp; OPERATING LIMITS</div>
+  <div class="legend">Type each step exactly as written, then press Enter or click away to check it. &nbsp; &dagger; = boldface critical action item &nbsp; * = memory item</div>
+  <div class="toolbar">
+    <button id="revealBtn">Show answers</button>
+    <button id="resetBtn">Reset</button>
+  </div>
+  <div class="columns">
+    <div id="leftCol"></div>
+    <div class="rightCol" id="rightCol"></div>
+  </div>
+</div>
+
+<footer>Practice tool for personal study &mdash; not an official reference. Verify against your current publication.</footer>
+
 <script>
-const DATA={"before": [{"step": "1", "challenge": "Parking Brake", "action": "Pull handle, pump LS brakes to set.", "response": "PF: Set"}, {"step": "2", "challenge": "Electrical Panel", "action": "Confirm the following are OFF (or set for the type of start):\nA. Battery\nB. Generators\nC. Avionics Master\nD. AUX BAT\nE. Start and auto-ignition", "response": "PF: Set"}, {"step": "3", "challenge": "Landing Gear", "action": "Visually check handle down and locked. Do not touch the gear handle while on the ground.", "response": "PF: Down"}, {"step": "4", "challenge": "Flaps", "action": "Check that the flap handle matches what you can see out the window on your side. The indicator is inop without power.\nUp: paint on wing continuous.\nApp: split with some internal red paint.\nDown: flap upper surface not visible; more red interior paint visible.", "response": "PF: Correspond\nPM: Correspond"}, {"step": "5", "challenge": "Power Quadrant", "action": "Right to Left:\nCondition Lever — FUEL CUTOFF (full aft); set friction.\nProp Lever — from Feather to Full Forward; set friction.\nPower Lever — aft against Idle stops (Beta or Reverse will damage the reverse mechanism); set friction.", "response": "PF: Set"}, {"step": "6", "challenge": "Lights", "action": "Make sure all lights are OFF (down), except Beacon — ON.\n30 min before sunset / <3 SM visibility / formation flight: + Navigation Lights — ON.", "response": "PF: Set"}, {"step": "7", "challenge": "Anti-Ice/Deice", "action": "Ensure all switches in the HEAT subpanel and the two deice/anti-ice switches above it are OFF (down).\nEnsure BOTH ice vanes below the LS yoke (Ice Engine Protection) are pushed IN to close.", "response": "PF: OFF"}, {"step": "8", "challenge": "Fuel Panel", "action": "A. Fuel Panel circuit breakers — IN\nB. Firewall Valve — OPEN (guard down)\nC. Crossfeed: OPEN; check crossfeed annunciator; CLOSED\nD. Boost Pump: Left ON and note battery ammeter draw; Right ON and confirm ammeter draw increased; leave both ON\nE. Battery — ON; check LH/RH Fuel Px annunciator lights extinguished.", "response": "PF: Checked Set"}, {"step": "9", "challenge": "Annunciator Panel", "action": "RS holds Press-To-Test button. LS ensures all annunciator lights, terrain, pull up, terrain NA, ESIS on/off, and EMER FREQ illuminate. Punch out Fault Warn. If dimmer was not adjusted in preflight, do it now. RS releases PtT button.\nNote: good time for observer to close and latch cabin door.", "response": "PF: Checked"}, {"step": "10", "challenge": "Fire Detectors", "action": "Rotate Fire Detector Switch clockwise to 3; wait 3 seconds; LS confirms Fault Warn, LH Fire, LH FIRE EXT PUSH TO EXT; RS confirms RH Fire, RH FIRE EXT PUSH TO EXT.\nRepeat at 2 and 1. Rotate switch to OFF.", "response": "PF: 3\nPM: 2\nPF: 3\nPM: 2\nPF: 3\nPM: 2\nPF: Checked\nPM: Checked"}, {"step": "11", "challenge": "Cabin Door", "action": "Observer: confirm using patch indicators on the door that it is closed and latched.\nLS: confirm CABIN DOOR OPEN annunciator is extinguished.", "response": "OBS: Locked\nPF: Locked\nPM: Before Start Checklist complete"}], "start": [{"step": "1", "challenge": "PF Brief / Start Selection", "action": "Example: “This will be a battery start of the right engine.” Hold up two fingers for lineman to indicate right-side engine start.", "response": "PF: Left side clear\nPM: Right side clear"}, {"step": "2", "challenge": "Right Starter", "action": "Engage right starter with right hand by moving it from middle OFF to IGN & ENG START. Leave right hand on starter in case of abnormal start. Simultaneously begin yoke clock timer with left hand. Call out switch movement (“on”), RH IGN IND illumination (“ignition”), and N1 increase (“rotation”). Know duty cycle/limitations and be prepared to abort abnormal starts.", "response": "PF: On, Ignition, Rotation"}, {"step": "3", "challenge": "N1", "action": "Confirm readout at 12% and rising.", "response": "Above 12%"}, {"step": "4", "challenge": "Right Condition Lever", "action": "Check battery above 18V. If below 18V, discontinue start and consider charging battery before subsequent starts. RS begins yoke clock for light-off time limit of 10 seconds. Move right condition lever to Low Idle and keep hand on lever to abort start.", "response": "Low Idle"}, {"step": "5", "challenge": "Fuel Flow / Light Off", "action": "Note fuel flow approximately 100 lb/hr. When ITT rises, call; RS stops clock and verbally notes elapsed time. If no light-off after 10 seconds, execute abnormal start EP. Faulty fuel flow gauge is not a reason to abort.", "response": "Light Off\nPM: ____ seconds"}, {"step": "6", "challenge": "Start Monitoring", "action": "PF monitors start: N1, ITT, lineman, clock/elapsed seconds. Roughly 3–4 x 10-second cycles for start. ITT limit 925°C / 1090°C for 2 seconds. Start complete when N1 reaches Low Idle 51–54%.", "response": "N1 stable above 50%"}, {"step": "7", "challenge": "Right Starter / Oil Pressure", "action": "Move right starter to OFF; stop LS clock and check time OFF. Confirm successful start: oil pressure >40 PSI, N1 stable 51–54%, ITT below 685°C.", "response": "Thumbs up to lineman"}, {"step": "8", "challenge": "Right Condition Lever / Generator", "action": "Advance condition lever to High Idle; ensure N1 70–73%. Move right generator switch forward to RESET detent, then it springs to ON. Check RH GEN OUT light extinguished and ammeter load increase.", "response": "High Idle\n“Reset, On” / Switch, Light, Load"}, {"step": "9", "challenge": "Control Check", "action": "PF rolls yoke left; PM checks opposite right-wing aileron indication. PF rolls right; PM checks opposite indication. PF pulls yoke aft; PM confirms elevator movement. PF pushes yoke forward; PM confirms elevator movement. PF checks rudder deflection while lineman observes. PF indicates flaps down, sets Flaps Down, passes controls for RS control check; PM passes controls back.", "response": "PF: Left aileron up → PM: Down\nPF: Aileron down → PM: Up\nPF: Elevator Up → PM: Up\nPF: Elevator down → PM: Down"}, {"step": "10", "challenge": "Flap Check", "action": "Indicate flaps down to lineman; select Full Down; confirm 100%/43° and visually check. Select APP; confirm 35%/15° and visually check. Select UP; confirm indicator reads up and visually check. Return to selected flap configuration as directed.", "response": "PF: Down / checked down\nPM: Down\nPF: Approach / checked approach\nPM: Approach\nPF: Up / checked up\nPM: Up"}, {"step": "11", "challenge": "Right Generator", "action": "Check load below 0.5 (wait if necessary). Set generator to OFF.", "response": "Load below .5\nOff"}, {"step": "12", "challenge": "PF Briefs Second Start", "action": "Example: “This will be a generator-assisted start of the left engine.” Hold up one finger for lineman to indicate left-side engine start.", "response": "PF: Left side clear\nPM: Right side clear"}, {"step": "13", "challenge": "Left Starter", "action": "Engage LEFT starter with right hand from middle OFF to IGN & ENG START. Leave hand on starter in case of abnormal start. Begin yoke clock with left hand. Call “on,” ignition annunciator illumination, and N1 “rotation.” Know duty cycle/limitations and be prepared to abort abnormal starts.", "response": "On, Ignition, Rotation"}, {"step": "14", "challenge": "N1 / Right Generator", "action": "Confirm N1 readout at 12% and rising. Turn RIGHT generator ON and note RH GEN OUT extinguished. If ITT likely to exceed 790°C, abort start (turn off RIGHT generator, then complete Abort Start procedure for LEFT engine).", "response": "Above 12%\nReset, On\nMonitor ITT"}, {"step": "15", "challenge": "Left Condition Lever / Fuel Flow", "action": "Move left condition lever to Low Idle and keep hand on lever to abort. RS begins yoke clock for 10-second light-off limit. Note fuel flow approximately 100 lb/hr. When ITT rises, call; RS stops clock and notes elapsed time. If no light-off after 10 seconds, execute abnormal start EP.", "response": "Low Idle\nLight Off\nPM: ____ seconds"}, {"step": "16", "challenge": "Left Start Monitoring", "action": "PF monitors N1, ITT, lineman, clock/elapsed seconds. Roughly 3–4 x 10-second cycles. ITT limit 925°C / 1090°C for 2 seconds. Start complete at Low Idle 51–54%.", "response": "N1 stable above 50%"}, {"step": "17", "challenge": "Left Starter / Oil Pressure", "action": "Move right starter to OFF; stop LS clock and check time OFF. Confirm oil pressure >40 PSI, N1 stable 51–54%, ITT below 685°C.", "response": "Thumbs up to lineman"}, {"step": "18", "challenge": "Right Generator", "action": "OFF.", "response": "Off"}, {"step": "19", "challenge": "Fuel Quantity Indicators", "action": "Check that indicators are both reading something. Otherwise indicates failure of R/L Current Limiter.", "response": "Checked"}, {"step": "20", "challenge": "Right Generator", "action": "Move switch forward to RESET detent, then springs to ON. Check RH GEN OUT light extinguished and ammeter load increase.", "response": "Reset, On\nSwitch, Light, Load"}, {"step": "21", "challenge": "Left Generator", "action": "Move switch forward to RESET detent, then springs to ON. Check LH GEN OUT light extinguished and ammeter load increase. Confirm load within 0.1 L/R.", "response": "Reset, On\nSwitch, Light, Load\nLoad < .1"}, {"step": "22", "challenge": "Right Condition Lever", "action": "Move to Low Idle. Once N1 at 51–54%.", "response": "Low Idle"}, {"step": "23", "challenge": "Fuel Control Heat", "action": "Turn on both FUEL CONTROL switches on the HEAT subpanel.", "response": "On"}]};let current='before';const ORIGINAL=JSON.parse(JSON.stringify(DATA));
-function tab(t){current=t;document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));document.getElementById(t+'Tab').classList.add('active');document.getElementById('title').value=t==='before'?'BEFORE START':'START';render()}
-function normalizeAnswer(v){
- return String(v).toLowerCase().replace(/\s+/g,' ').trim();
-}
-function matches(user,answer){
- return normalizeAnswer(user)===normalizeAnswer(answer);
-}
-function render(){
- let b=document.getElementById('rows');b.innerHTML='';
- DATA[current].forEach((r,i)=>{
-  let tr=document.createElement('tr');
-  let stepCell = quizMode
-    ? '<td><div class="step-number">'+(r.step || i+1)+'</div></td>'
-    : '<td><input class="step" value="'+(r.step || i+1)+'"></td>';
-  let actionCell = quizMode
-    ? '<td class="action-cell"><div class="answer-key"></div></td>'
-    : '<td class="action-cell"><textarea class="action-input" placeholder="Edit action..."></textarea></td>';
+var DATA = {
+  left: [
+    { title: "Abnormal Start", steps: [
+      { m: "*1.", t: "Condition Lever- FUEL CUTOFF (Dec. Below 790°C)" },
+      { m: "*2.", t: "Starter- Starter Only (For The Remainder Of The 40 Seconds)" },
+      { m: "*3.", t: "Starter- Off (at 40 seconds)" }
+    ]},
+    { title: "Emergency Shutdown on Deck", steps: [
+      { m: "*1.", t: "Stop the aircraft and set the parking brake." },
+      { m: "*2.", t: "Condition Levers- FUEL CUTOFF" },
+      { note: "IN CASE OF CONFIRMED/SUSPECTED FIRE OR FUEL LEAK, CONTINUE CHECKLIST. IF NOT, SECURE REMAINING ENGINE USING SECURE CHECKLIST." },
+      { m: "*3.", t: "Firewall Valves - CLOSED" },
+      { m: "*4.", t: "Boost Pumps - OFF" },
+      { m: "*5.", t: "Fire Extinguisher - As Required" },
+      { m: "*6.", t: "AUX BATT Switch - OFF" },
+      { m: "*7.", t: "Gang Bar - OFF" },
+      { m: "*8.", t: "Evacuate Aircraft" }
+    ]},
+    { title: "Aborting Takeoff", steps: [
+      { m: "*1.", t: "Announce \"Abort\"" },
+      { m: "*2.", t: "Power Levers - IDLE" },
+      { m: "*3.", t: "Reverse - As Required" },
+      { m: "*4.", t: "Brakes - As- Required" },
+      { note: "IMMEDIATELY PRIOR TO DEPARTING THE PREPARED SURFACE:" },
+      { m: "*5.", t: "Condition Levers - FUEL CUTOFF" },
+      { note: "AS SOON AS PRACTICABLE:" },
+      { m: "*6.", t: "Firewall Valves - Closed" },
+      { m: "*7.", t: "Boost Pumps - OFF" },
+      { m: "*8.", t: "Fire Extinguisher(s) - As Required" },
+      { m: "*9.", t: "AUX BATT Switch - OFF" },
+      { m: "*10.", t: "Gang Bar - OFF" },
+      { m: "*11.", t: "Evacuate Aircraft" }
+    ]},
+    { title: "Engine Failure After Takeoff", steps: [
+      { m: "*1.", t: "Power - As Required" },
+      { m: "*2.", t: "Landing gear - UP" },
+      { m: "*3.", t: "Airspeed - As Required (VXSE Or VYSE)" },
+      { m: "*4.", t: "Emergency Shutdown Checklist - Execute" }
+    ]},
+    { title: "Emergency Shutdown Checklist", steps: [
+      { m: "†*1.", t: "Power Lever - IDLE" },
+      { m: "†*2.", t: "Prop Lever - FEATHER" },
+      { m: "†*3.", t: "Condition Lever - FUEL CUTOFF" },
+      { note: "IN CASE OF CONFIRMED/SUSPECTED FIRE OR FUEL LEAK, CONTINUE CHECKLIST. IF PROP FAILS TO FEATHER, PROCEED TO ALTERNATE FEATHERING CHECKLIST." },
+      { m: "†*4.", t: "Firewall Value - CLOSED" },
+      { m: "†*5.", t: "Fire Extinguisher - As Required" },
+      { m: "†*6.", t: "Bleed air valve - Closed" }
+    ]},
+    { title: "Windmilling Airstart", steps: [
+      { m: "†*1.", t: "Power Lever (Failed Engine) - IDLE" },
+      { m: "†*2.", t: "Prop Lever (Failed Engine) - Pull Forward" },
+      { m: "†*3.", t: "Condition Lever (Failed Engine) - FUEL CUTOFF" },
+      { m: "*4.", t: "Firewall Valve - OPEN" },
+      { m: "*5.", t: "Autoignition - ARMED" },
+      { m: "*6.", t: "Condition Lever - LOW IDLE" },
+      { m: "*7.", t: "Power - As Required" }
+    ]},
+    { title: "Smoke/Fire of Unknown Origin", steps: [
+      { m: "*1.", t: "Crew - Alerted" },
+      { m: "*2.", t: "Cabin Temperature Mode - OFF" },
+      { m: "*3.", t: "Vent Blower - AUTO" },
+      { m: "*4.", t: "Oxygen Mask/MIC Switches (100 Percent) - As Required" }
+    ]}
+  ],
+  right: [
+    { title: "Smoke and Fume Elimination", steps: [
+      { m: "*1.", t: "Oxygen Mask/MIC Switches (100 Percent) - As Required" },
+      { m: "*2.", t: "Pressurization - DUMP" }
+    ]},
+    { title: "Fuel Leaks", steps: [
+      { m: "†*1.", t: "Condition Lever - FUEL CUTOFF" },
+      { m: "*2.", t: "Emergency Shutdown Checklist - Execute" }
+    ]},
+    { title: "Primary Governor Failure/Malfunction", steps: [
+      { m: "*1.", t: "Attempt To Adjust Prop RPM to Normal Operating Range" },
+      { m: "†*2.", t: "Power Lever - IDLE" },
+      { m: "†*3.", t: "Prop Lever - FEATHER" },
+      { m: "*4.", t: "Alternate Prop Feather Checklist - As Required" },
+      { m: "*5.", t: "Land as soon as possible." }
+    ]},
+    { title: "Explosive Decompression", steps: [
+      { m: "*1.", t: "Oxygen Mask/MIC Switches (100 Percent) - As Required" },
+      { m: "*2.", t: "Descend - As Required" }
+    ]},
+    { title: "Unscheduled Electric Trim Activation", steps: [
+      { m: "*1.", t: "A/P/Trim Disconnect (control wheel) - Depress Fully and Hold." }
+    ]},
+    { title: "Emergency Descent Procedure", steps: [
+      { m: "*1.", t: "Power Levers - IDLE" },
+      { m: "*2.", t: "Props - Full Forward" },
+      { m: "*3.", t: "Flaps - As Required" },
+      { m: "*4.", t: "Landing Gear - As Required" },
+      { m: "*5.", t: "Airspeed - As Required" },
+      { m: "*6.", t: "Windshield Heat - As Required" }
+    ]},
+    { title: "Spin/Out of Control Flight Recovery", steps: [
+      { m: "*1.", t: "Power Levers - IDLE" },
+      { m: "*2.", t: "Rudder - Full Deflection Opposite Direction Of Turn Needle" },
+      { m: "*3.", t: "Control Wheel - Rapidly Forward" },
+      { m: "*4.", t: "Rudder - Neutralize After Rotation Stops" },
+      { m: "*5.", t: "Control Wheel - Pull Out Of Dive By Exerting Smooth, Steady Back Pressure" }
+    ]},
+    { title: "Terrain Warning (IMC or at Night)", steps: [
+      { m: "*1.", t: "Wings - Level" },
+      { m: "*2.", t: "Power - Max Continuous" },
+      { m: "*3.", t: "Pitch - As Required to set and maintain VX" },
+      { m: "*4.", t: "Flaps - Approach (Unless Already Up)" },
+      { m: "*5.", t: "Gear - UP" },
+      { m: "*6.", t: "Flaps - UP" },
+      { m: "*7.", t: "Props - 1900 RPM" },
+      { m: "*8.", t: "Continue Climb at Vx Until All Visual And Voice Warnings Cease" }
+    ]},
+    { title: "Single-Engine Waveoff/Missed Approach", steps: [
+      { m: "*1.", t: "Power - Max Continuous, Establish Positive Rate Of Climb (VXSE Minimum)" },
+      { m: "*2.", t: "Flaps - APPROACH (Unless Already UP)" },
+      { m: "*3.", t: "Landing Gear - UP" },
+      { m: "*4.", t: "Flaps - UP" },
+      { m: "*5.", t: "Prop- 1900 RPM" }
+    ]},
+    { title: "Low Altitude Windshear", steps: [
+      { m: "*1.", t: "Power - Max Continuous" },
+      { m: "*2.", t: "Pitch - Set and Hold Approximately 15° Noseup" },
+      { m: "*3.", t: "Landing Gear - UP" },
+      { m: "*4.", t: "Flaps - Maintain Current Setting" }
+    ]}
+  ]
+};
 
-  tr.innerHTML=stepCell+
-   '<td><input class="quiz-input challenge-input" placeholder="Type the challenge..."></td>'+
-   actionCell+
-   '<td><input class="quiz-input response-input" placeholder="Type the response..."></td>'+
-   '<td class="actions"><button class="del">Delete</button></td>';
+var allInputs = [];
 
-  if(!quizMode){
-   let stepInput=tr.querySelector('.step');
-   stepInput.oninput=e=>r.step=e.target.value;
-  }
+function normalize(s){
+  return s.trim().toLowerCase().replace(/\s+/g, " ").replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"');
+}
 
-  let action=tr.querySelector('.answer-key');
-  let actionInput=tr.querySelector('.action-input');
-  if(action){ action.textContent=r.action || ''; }
-  if(actionInput){
-    actionInput.value = r.action || '';
-    actionInput.oninput = e => r.action = e.target.value;
-  }
+function buildColumn(sections, container){
+  sections.forEach(function(sec){
+    var secEl = document.createElement("div");
+    secEl.className = "section";
+    var h = document.createElement("h2");
+    h.textContent = sec.title;
+    secEl.appendChild(h);
 
-  let challenge=tr.querySelector('.challenge-input');
-  let response=tr.querySelector('.response-input');
+    sec.steps.forEach(function(item){
+      if(item.note){
+        var noteEl = document.createElement("div");
+        noteEl.className = "note";
+        noteEl.textContent = item.note;
+        secEl.appendChild(noteEl);
+        return;
+      }
+      var stepEl = document.createElement("div");
+      stepEl.className = "step";
 
-  function grade(input, expected){
-    input.classList.remove('correct','wrong');
-    if(input.value.trim()==='') return;
-    const isMatch = matches(input.value, expected);
-    input.classList.add(isMatch ? 'correct' : 'wrong');
-  }
+      var markerEl = document.createElement("span");
+      markerEl.className = "marker";
+      markerEl.textContent = item.m;
+      stepEl.appendChild(markerEl);
 
-  function bindQuizField(field, storageKey, expected){
-    const raw = r[storageKey] || '';
-    field.value = raw;
-    const update = () => {
-      r[storageKey] = field.value;
-      grade(field, expected);
-    };
-    field.oninput = update;
-    field.onblur = update;
-    update();
-  }
+      var fieldEl = document.createElement("div");
+      fieldEl.className = "field";
 
-  if(quizMode){
-   r.challengeAnswer = r.challengeAnswer || '';
-   r.responseAnswer = r.responseAnswer || '';
-   challenge.placeholder='Type the challenge...';
-   response.placeholder='Type the response...';
-   bindQuizField(challenge, 'challengeAnswer', r.challenge);
-   bindQuizField(response, 'responseAnswer', r.response);
-   if(answersVisible){
-    challenge.value = r.challenge || '';
-    response.value = r.response || '';
-    grade(challenge, r.challenge);
-    grade(response, r.response);
-   }
-  } else {
-   challenge.value=r.challenge || '';
-   response.value=r.response || '';
-   challenge.placeholder='Edit challenge...';
-   response.placeholder='Edit response...';
-   challenge.oninput=e=>r.challenge=e.target.value;
-   response.oninput=e=>r.response=e.target.value;
-  }
+      var input = document.createElement("input");
+      input.type = "text";
+      input.autocomplete = "off";
+      input.spellcheck = false;
+      input.size = Math.max(10, item.t.length);
 
-  tr.querySelector('.del').onclick=()=>{DATA[current].splice(i,1);render()};
-  tr.querySelector('.action-cell').style.display=document.body.classList.contains('actions-hidden')?'none':'';
-  b.appendChild(tr);
- });
+      var markEl = document.createElement("span");
+      markEl.className = "mark";
+
+      function check(){
+        if(input.value.trim() === ""){
+          input.classList.remove("correct", "incorrect");
+          markEl.textContent = "";
+          markEl.className = "mark";
+          return;
+        }
+        if(normalize(input.value) === normalize(item.t)){
+          input.classList.remove("incorrect");
+          input.classList.add("correct");
+          markEl.textContent = "✓";
+          markEl.className = "mark ok";
+        } else {
+          input.classList.remove("correct");
+          input.classList.add("incorrect");
+          markEl.textContent = "✗";
+          markEl.className = "mark no";
+        }
+      }
+
+      input.addEventListener("input", check);
+
+      fieldEl.appendChild(input);
+      stepEl.appendChild(fieldEl);
+      secEl.appendChild(stepEl);
+
+      var answerEl = document.createElement("div");
+      answerEl.className = "answer";
+      answerEl.textContent = item.t;
+      secEl.appendChild(answerEl);
+
+      allInputs.push({ input: input, mark: markEl, answer: item.t, answerEl: answerEl });
+    });
+
+    container.appendChild(secEl);
+  });
 }
-let quizMode=true;
-let actionsVisible=true;
-let answersVisible=false;
-function applyMode(){
- document.body.classList.toggle('quiz-mode',quizMode);
- const addBtn=document.getElementById('addStepBtn');
- const quizBtn=document.getElementById('quizModeBtn');
- const editBtn=document.getElementById('editModeBtn');
- const saveBtn=document.getElementById('saveBtn');
- const clearBtn=document.getElementById('clearAnswersBtn');
- const actionBtn=document.getElementById('actionToggle');
- const answerBtn=document.getElementById('answerToggle');
- const titleInput=document.getElementById('title');
- if(addBtn) addBtn.style.display=quizMode?'none':'inline-block';
- if(quizBtn) quizBtn.classList.toggle('active',quizMode);
- if(editBtn) editBtn.classList.toggle('active',!quizMode);
- if(saveBtn) saveBtn.style.display=quizMode?'none':'inline-block';
- if(clearBtn) clearBtn.style.display=quizMode?'inline-block':'none';
- if(actionBtn) actionBtn.style.display=quizMode?'inline-block':'none';
- if(answerBtn) answerBtn.style.display=quizMode?'inline-block':'none';
- if(titleInput){
-  titleInput.readOnly = !quizMode ? false : true;
-  titleInput.style.display = quizMode ? 'none' : 'inline-block';
-  titleInput.style.cursor = quizMode ? 'default' : 'text';
- }
- if(!quizMode){
-  actionsVisible=true;
-  answersVisible=false;
-  document.body.classList.remove('actions-hidden');
-  if(actionBtn) actionBtn.textContent='Actions: Visible';
-  if(answerBtn) answerBtn.textContent='Answers: Hidden';
- } else {
-  document.body.classList.toggle('actions-hidden',!actionsVisible);
-  if(answerBtn) answerBtn.textContent=answersVisible?'Answers: Visible':'Answers: Hidden';
- }
-}
-function switchToQuiz(){
- quizMode=true;
- applyMode();
- render();
-}
-function switchToEdit(){
- const password=prompt('Enter password');
- if(password !== 'Mango2019'){
-  alert('Incorrect password.');
-  return;
- }
- quizMode=false;
- applyMode();
- render();
-}
-function toggleActions(){
- if(quizMode===false) return;
- actionsVisible=!actionsVisible;
- document.body.classList.toggle('actions-hidden',!actionsVisible);
- const btn=document.getElementById('actionToggle');
- if(btn) btn.textContent=actionsVisible?'Actions: Visible':'Actions: Hidden';
- document.querySelectorAll('.action-cell').forEach(cell=>cell.style.display=actionsVisible?'':'none');
- document.querySelectorAll('.action-column').forEach(cell=>cell.style.display=actionsVisible?'':'none');
-}
-function toggleAnswers(){
- if(quizMode===false) return;
- answersVisible=!answersVisible;
- const rows = document.querySelectorAll('#rows tr');
- rows.forEach((tr, index) => {
-  const r = DATA[current][index];
-  if(!r) return;
-  const challenge = tr.querySelector('.challenge-input');
-  const response = tr.querySelector('.response-input');
-  if(!challenge || !response) return;
-  if(answersVisible){
-   challenge.value = r.challenge || '';
-   response.value = r.response || '';
-   challenge.classList.remove('correct','wrong');
-   response.classList.remove('correct','wrong');
-   challenge.classList.add(matches(challenge.value, r.challenge) ? 'correct' : 'wrong');
-   response.classList.add(matches(response.value, r.response) ? 'correct' : 'wrong');
-  } else {
-   challenge.value = r.challengeAnswer || '';
-   response.value = r.responseAnswer || '';
-   challenge.classList.remove('correct','wrong');
-   response.classList.remove('correct','wrong');
-   if(challenge.value.trim() !== '') challenge.classList.add(matches(challenge.value, r.challenge) ? 'correct' : 'wrong');
-   if(response.value.trim() !== '') response.classList.add(matches(response.value, r.response) ? 'correct' : 'wrong');
-  }
- });
- const btn=document.getElementById('answerToggle');
- if(btn) btn.textContent=answersVisible?'Answers: Visible':'Answers: Hidden';
-}
-function clearAnswers(){
- if(quizMode===false) return;
- DATA[current].forEach(r=>{
-  r.challengeAnswer='';
-  r.responseAnswer='';
- });
- document.querySelectorAll('.quiz-input').forEach(x=>{
-  x.value='';
-  x.classList.remove('correct','wrong');
- });
-}
-function add(){if(quizMode) return; DATA[current].push({step:String(DATA[current].length+1),challenge:'',action:'',response:''});render()}
-function save(){if(quizMode) return; localStorage.setItem('cb-'+current,JSON.stringify(DATA[current]));alert('Saved '+current+' checklist.')}
-function load(){let x=localStorage.getItem('cb-'+current);if(!x)return alert('No saved checklist found.');DATA[current]=JSON.parse(x);render()}
-function resetList(){if(confirm('Reset this checklist to the original draft?')){DATA[current]=JSON.parse(JSON.stringify(ORIGINAL[current]));render()}}
-applyMode();
-tab('before');
-</script></body></html>
+
+buildColumn(DATA.left, document.getElementById("leftCol"));
+buildColumn(DATA.right, document.getElementById("rightCol"));
+
+var revealed = false;
+document.getElementById("revealBtn").addEventListener("click", function(){
+  revealed = !revealed;
+  allInputs.forEach(function(entry){
+    entry.answerEl.classList.toggle("show", revealed);
+  });
+  document.getElementById("revealBtn").textContent = revealed ? "Hide answers" : "Show answers";
+});
+
+document.getElementById("resetBtn").addEventListener("click", function(){
+  allInputs.forEach(function(entry){
+    entry.input.value = "";
+    entry.input.classList.remove("correct", "incorrect");
+    entry.mark.textContent = "";
+    entry.mark.className = "mark";
+    entry.answerEl.classList.remove("show");
+  });
+  revealed = false;
+  document.getElementById("revealBtn").textContent = "Show answers";
+});
+</script>
+
+</body>
+</html>
