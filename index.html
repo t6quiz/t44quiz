@@ -142,7 +142,7 @@
 
 <div class="sheet">
   <div class="titlebar">T-44C EMERGENCY PROCEDURE CRITICAL ACTION MEMORY ITEMS &amp; OPERATING LIMITS</div>
-  <div class="legend">Type each step exactly as written, then press Enter or click away to check it. &nbsp; &dagger; = boldface critical action item &nbsp; * = memory item</div>
+  <div class="legend">Type each step exactly as written to check it live. &nbsp; Press <b>Caps Lock</b> in a field to reveal just that answer. &nbsp; &dagger; = boldface critical action item &nbsp; * = memory item</div>
   <div class="toolbar">
     <button id="revealBtn">Show answers</button>
     <button id="resetBtn">Reset</button>
@@ -200,13 +200,13 @@ var DATA = {
       { m: "†*2.", t: "Prop Lever - FEATHER" },
       { m: "†*3.", t: "Condition Lever - FUEL CUTOFF" },
       { note: "IN CASE OF CONFIRMED/SUSPECTED FIRE OR FUEL LEAK, CONTINUE CHECKLIST. IF PROP FAILS TO FEATHER, PROCEED TO ALTERNATE FEATHERING CHECKLIST." },
-      { m: "†*4.", t: "Firewall Value - CLOSED" },
+      { m: "†*4.", t: "Firewall Valve - CLOSED" },
       { m: "†*5.", t: "Fire Extinguisher - As Required" },
       { m: "†*6.", t: "Bleed air valve - Closed" }
     ]},
     { title: "Windmilling Airstart", steps: [
       { m: "†*1.", t: "Power Lever (Failed Engine) - IDLE" },
-      { m: "†*2.", t: "Prop Lever (Failed Engine) - Pull Forward" },
+      { m: "†*2.", t: "Prop Lever (Failed Engine) - Full Forward" },
       { m: "†*3.", t: "Condition Lever (Failed Engine) - FUEL CUTOFF" },
       { m: "*4.", t: "Firewall Valve - OPEN" },
       { m: "*5.", t: "Autoignition - ARMED" },
@@ -353,6 +353,13 @@ function buildColumn(sections, container){
       }
 
       input.addEventListener("input", check);
+
+      input.addEventListener("keydown", function(e){
+        if(e.key === "CapsLock"){
+          e.preventDefault();
+          answerEl.classList.toggle("show");
+        }
+      });
 
       fieldEl.appendChild(input);
       stepEl.appendChild(fieldEl);
